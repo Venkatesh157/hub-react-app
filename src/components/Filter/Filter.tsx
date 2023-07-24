@@ -1,58 +1,72 @@
-import React from "react";
+import { ChangeEvent } from "react";
 import Search from "../Search/Search";
 import Dropdown from "../Dropdown/Dropdown";
-import { RootState } from "../../middleware/store";
-import { useSelector } from "react-redux";
+
+import styles from "./Filter.module.css";
 import BooleanFilter from "../BooleanFilter/BooleanFilter";
-import { Hub } from "../../entity/hub";
+import { RootState } from "../../middleware/store";
 
-function Filter() {
-  const filters = useSelector((state: RootState) => state.filters);
-  const data = useSelector((state: RootState) => state.hubs.data);
+interface FilterProps {
+  filters: RootState["filters"];
+  data: RootState["hubs"]["data"];
+  uniqueTypes: string[] | null;
+  uniqueStates: string[] | null;
+  uniqueStages: string[] | null;
+  handleStateChange: (option: string) => void;
+  handleStageChange: (option: string) => void;
+  handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleDropdownChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+}
 
-  const type =
-    data &&
-    data.reduce((types: string[], item: Hub) => {
-      if (!types.includes(item.type)) {
-        types.push(item.type);
-      }
-      return types;
-    }, [] as string[]);
-
-  const uniqueStates =
-    data &&
-    data.reduce((states: string[], item: Hub) => {
-      if (!states.includes(item.state)) {
-        states.push(item.state);
-      }
-      return states;
-    }, [] as string[]);
-
-  const uniqueStages =
-    data &&
-    data.reduce((stages: string[], item: Hub) => {
-      if (!stages.includes(item.stage)) {
-        stages.push(item.stage);
-      }
-      return stages;
-    }, [] as string[]);
-
+function Filter({
+  filters,
+  uniqueTypes,
+  uniqueStates,
+  uniqueStages,
+  handleInputChange,
+  handleDropdownChange,
+  handleStateChange,
+  handleStageChange,
+}: FilterProps) {
   return (
-    <div>
+    <>
       <h5>Filters:</h5>
-      <Search
-        value={filters.selectedDisplayName}
-        // onChange={(value) => dispatch(setDisplayName(value))}
-      />
-
-      <Dropdown options={type} selectedType={filters.selectedType} />
-      <BooleanFilter
-        states={uniqueStates}
-        stages={uniqueStages}
-        selectedStates={filters.selectedStates}
-        selectedStages={filters.selectedStages}
-      />
-    </div>
+      <div
+        className={styles.container}
+        data-testid="filter-component"
+        data-filters={JSON.stringify(filters)}
+      >
+        <Search
+          value={filters.selectedDisplayName}
+          onChange={handleInputChange}
+        />
+        {uniqueTypes && (
+          <Dropdown
+            options={uniqueTypes}
+            selectedType={filters.selectedType}
+            onChange={handleDropdownChange}
+          />
+        )}
+        <div className={styles.booleanFilterContainer}>
+          {uniqueStates && (
+            <BooleanFilter
+              selectedItems={filters.selectedStates}
+              options={uniqueStates}
+              onChange={handleStateChange}
+              filterName="State"
+            />
+          )}
+          {uniqueStages && (
+            <BooleanFilter
+              selectedItems={filters.selectedStages}
+              options={uniqueStages}
+              onChange={handleStageChange}
+              filterName="Stage"
+            />
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 

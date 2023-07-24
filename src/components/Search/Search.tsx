@@ -1,22 +1,21 @@
 import React from "react";
-import { setDisplayName } from "../../middleware/store";
-import { useDispatch } from "react-redux";
+import styles from "./Search.module.css";
 
 interface SearchrProps {
   value: string;
+  onChange: any;
 }
 
-function Search({ value }: SearchrProps) {
-  const dispatch = useDispatch();
-
+function Search({ value, onChange }: SearchrProps) {
   return (
-    <div>
+    <div className={styles.container}>
       <label htmlFor="displayNameFilter">Display Name:</label>
       <input
         type="text"
         id="displayNameFilter"
         value={value}
-        onChange={(e) => dispatch(setDisplayName(e.target.value))}
+        onChange={(e) => onChange(e)}
+        data-testid="displayNameFilter-input"
       />
     </div>
   );

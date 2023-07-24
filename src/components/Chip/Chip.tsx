@@ -6,7 +6,7 @@ interface ChipProps {
 }
 
 function Chip({ value }: ChipProps) {
-  return <div className={styles.container}>{value.toLowerCase()}</div>;
+  return <div className={styles.container}>{value}</div>;
 }
 
 export default Chip;

@@ -1,50 +1,40 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import { toggleStage, toggleState } from "../../middleware/store";
+import { getHubStage, getHubState } from "../../utils/helper";
 
 interface BooleanFilterProps {
-  states: string[];
-  stages: string[];
-  selectedStates: string[];
-  selectedStages: string[];
+  filterName: string;
+  options: string[];
+  onChange: (option: string) => void;
+  selectedItems: string[];
 }
 
-const BooleanFilter: React.FC<BooleanFilterProps> = ({
-  states,
-  stages,
-  selectedStates,
-  selectedStages,
-}) => {
-  const dispatch = useDispatch();
-
+function BooleanFilter({
+  filterName,
+  options,
+  onChange,
+  selectedItems,
+}: BooleanFilterProps) {
   return (
-    <div>
-      <label>Filter by State:</label>
-      {states &&
-        states.map((state) => (
-          <div key={state}>
+    <div role="group" aria-labelledby="filterHeading">
+      <span data-testid="filterHeading">Filter by {filterName}:</span>
+      {options &&
+        options.map((option) => (
+          <div key={option}>
             <input
               type="checkbox"
-              checked={selectedStates.includes(state)}
-              onChange={() => dispatch(toggleState(state))}
+              checked={selectedItems.includes(option)}
+              onChange={() => onChange(option)}
+              data-testid={`${filterName}-${option}`}
             />
-            <label>{state}</label>
-          </div>
-        ))}
-      <label>Filter by Stage:</label>
-      {stages &&
-        stages.map((stage) => (
-          <div key={stage}>
-            <input
-              type="checkbox"
-              checked={selectedStages.includes(stage)}
-              onChange={() => dispatch(toggleStage(stage))}
-            />
-            <label>{stage}</label>
+            <label htmlFor={`${filterName}-${option}`}>
+              {filterName === "State"
+                ? getHubState(option)
+                : getHubStage(option)}
+            </label>
           </div>
         ))}
     </div>
   );
-};
+}
 
 export default BooleanFilter;

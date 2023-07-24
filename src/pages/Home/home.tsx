@@ -1,20 +1,15 @@
 import React, { useEffect } from "react";
 import axios from "axios";
-import { Hub } from "../../entity/hub";
 import Card from "../../components/Card/Card";
-import Filter from "../../components/Filter/Filter";
 import styles from "./Home.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, setData } from "../../middleware/store";
+import FilterContainer from "../../components/Filter/FilterContainer";
 
 function Home() {
   const dispatch = useDispatch();
   const data = useSelector((state: RootState) => state.hubs.data);
   const filter = useSelector((state: RootState) => state.filters);
-
-  useEffect(() => {
-    getData();
-  });
 
   async function getData() {
     try {
@@ -25,43 +20,57 @@ function Home() {
     }
   }
 
-  const filteredData = data?.filter((item) => {
-    if (filter.selectedType && item.type !== filter.selectedType) return false;
+  useEffect(() => {
+    getData();
+  }, []);
 
-    if (
-      filter.selectedDisplayName &&
-      !item.displayName
-        .toLowerCase()
-        .includes(filter.selectedDisplayName.toLowerCase())
-    )
-      return false;
-    if (
-      filter.selectedStates.length > 0 &&
-      !filter.selectedStates.includes(item.state)
-    )
-      return false;
-    if (
-      filter.selectedStages.length > 0 &&
-      !filter.selectedStages.includes(item.stage)
-    )
-      return false;
+  const getFilteredData = () => {
+    if (!data) return [];
 
-    return true;
-  });
+    return data.filter((item) => {
+      const {
+        selectedType,
+        selectedDisplayName,
+        selectedStates,
+        selectedStages,
+      } = filter;
+      const typeMatch = !selectedType || item.type === selectedType;
+      const displayNameMatch =
+        !selectedDisplayName ||
+        item.displayName
+          .toLowerCase()
+          .includes(selectedDisplayName.toLowerCase());
+      const stateMatch =
+        selectedStates.length === 0 || selectedStates.includes(item.state);
+      const stageMatch =
+        selectedStages.length === 0 || selectedStages.includes(item.stage);
+      return typeMatch && displayNameMatch && stateMatch && stageMatch;
+    });
+  };
+
+  const filteredData = getFilteredData();
 
   return (
-    <div>
-      <h1> Cleanhub Hubs</h1>
-      <Filter />
-
-      <div className={styles.card}>
-        {filteredData &&
-          filteredData.map((item: Hub) => (
+    <div className={styles.container}>
+      <h1>Cleanhub Hubs</h1>
+      <FilterContainer />
+      {data === null ? (
+        <div className={styles.emptyPage}>
+          <h1>Loading...</h1>
+        </div>
+      ) : filteredData.length === 0 ? (
+        <div className={styles.emptyPage}>
+          <h1>No hubs yet!</h1>
+        </div>
+      ) : (
+        <div className={styles.card}>
+          {filteredData.map((item) => (
             <div key={item.uuid}>
               <Card hub={item} />
             </div>
           ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -63,7 +63,6 @@ const hubSlice = createSlice({
   initialState,
   reducers: {
     setData: (state, action) => {
-      console.log(action, "ACT");
       state.data = action.payload;
     },
   },
