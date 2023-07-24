@@ -26,7 +26,10 @@ function BooleanFilter({
               onChange={() => onChange(option)}
               data-testid={`${filterName}-${option}`}
             />
-            <label htmlFor={`${filterName}-${option}`}>
+            <label
+              htmlFor={`${filterName}-${option}`}
+              data-testid="filter-label"
+            >
               {filterName === "State"
                 ? getHubState(option)
                 : getHubStage(option)}

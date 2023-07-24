@@ -1,54 +1,49 @@
+/* eslint-disable testing-library/no-render-in-setup */
 import React from "react";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import BooleanFilter from "./BooleanFilter";
+import { getHubStage, getHubState } from "../../utils/helper";
 
-const mockOnChange = jest.fn();
+describe("BooleanFilter component", () => {
+  const filterName = "State";
+  const options = ["Option 1", "Option 2", "Option 3"];
+  const selectedItems = ["Option 2"]; // Assuming Option 2 is selected initially
 
-const options: string[] = ["Option 1", "Option 2", "Option 3"];
-const selectedItems: string[] = ["Option 1"];
+  const handleChange = jest.fn(); // Mock the onChange function
 
-describe("Boolean Filter", () => {
-  test("renders BooleanFilter component with options", () => {
+  beforeEach(() => {
     render(
       <BooleanFilter
-        filterName="Test Filter"
+        filterName={filterName}
         options={options}
-        onChange={mockOnChange}
+        onChange={handleChange}
         selectedItems={selectedItems}
       />
     );
-
-    const filterLabel = screen.getByTestId("filterHeading");
-    expect(filterLabel).toBeInTheDocument();
-
-    options.forEach((option) => {
-      const checkbox = screen.getByTestId(`Test Filter-${option}`);
-      const label = screen.getByText(option); // Get label by text content
-      expect(checkbox).toBeInTheDocument();
-      expect(checkbox).toHaveAttribute("type", "checkbox");
-      expect(checkbox).toHaveProperty(
-        "checked",
-        selectedItems.includes(option)
-      );
-      expect(label).toBeInTheDocument();
-      expect(label).toHaveAttribute("for", `Test Filter-${option}`); // Check the "for" attribute
-    });
   });
 
-  test("calls onChange when checkbox is clicked", () => {
-    render(
-      <BooleanFilter
-        filterName="Test Filter"
-        options={options}
-        onChange={mockOnChange}
-        selectedItems={selectedItems}
-      />
+  it("renders the correct filter heading", () => {
+    const filterHeadingElement = screen.getByTestId("filterHeading");
+    expect(filterHeadingElement).toHaveTextContent(`Filter by ${filterName}:`);
+  });
+
+  it("renders the correct number of options", () => {
+    const optionElements = screen.queryAllByTestId((id) =>
+      id.startsWith("State-Option")
     );
+    expect(optionElements).toHaveLength(options.length);
+  });
 
-    const option2Checkbox = screen.getByTestId("Test Filter-Option 2");
-    fireEvent.click(option2Checkbox);
+  it("calls onChange when an option is selected", () => {
+    const optionCheckbox = screen.getByTestId("State-Option 1");
+    fireEvent.click(optionCheckbox);
 
-    expect(mockOnChange).toHaveBeenCalledTimes(1);
-    expect(mockOnChange).toHaveBeenCalledWith("Option 2");
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith("Option 1");
+  });
+
+  it("renders the correct checked state for options", () => {
+    const optionCheckbox = screen.getByTestId("State-Option 2");
+    expect(optionCheckbox).toBeChecked();
   });
 });

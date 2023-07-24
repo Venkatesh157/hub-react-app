@@ -13,7 +13,7 @@ describe("Filter", () => {
   const mockUniqueStates = ["Active", "Inactive"];
   const mockUniqueStages = ["Initial", "Final"];
 
-  test("renders Filter component with correct props", () => {
+  it("renders Filter component with correct props", () => {
     render(
       <Filter
         filters={mockFilters}
