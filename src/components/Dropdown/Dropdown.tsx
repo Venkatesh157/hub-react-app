@@ -1,10 +1,10 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import styles from "./Dropdown.module.css";
 
 interface DropdownProps {
   options: string[];
   selectedType: string;
-  onChange: any;
+  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
 }
 
 function Dropdown({ options, selectedType, onChange }: DropdownProps) {

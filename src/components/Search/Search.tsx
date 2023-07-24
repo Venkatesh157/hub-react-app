@@ -1,9 +1,9 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import styles from "./Search.module.css";
 
 interface SearchrProps {
   value: string;
-  onChange: any;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 function Search({ value, onChange }: SearchrProps) {
