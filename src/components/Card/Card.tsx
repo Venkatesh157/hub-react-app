@@ -58,7 +58,7 @@ function Card({ hub }: CardProps) {
         <ProgressBar completed={unassignedQuantityPercentage} />
       </div>
 
-      <h5>Others</h5>
+      <p>Others:</p>
       <div className={styles.others}>
         <Chip value={getHubStage(stage)} />
         <Chip value={getHubState(state)} />
